@@ -70,6 +70,7 @@ view model =
     , div [] [ text (String.append "Moving Average: " ( toString ( average model.messages ) ) ) ]
     , button [onClick Start] [text "Start"]
     , button [onClick Stop] [text "Stop"]
+    , div [] [ text "Recent Prices: " ]
     , div [] (List.map viewMessage model.messages)
     ]
 
