@@ -34,14 +34,33 @@ addPrice prices price =
                 list
 
 
+-- -- not sure why this doesnt work
+-- safelyConcatList : List Float -> String -> List Float
+-- safelyConcatList prices a = 
+--     case String.toFloat a of
+--         Err msg ->
+--             prices
+
+--         Ok f ->
+--             case head prices of
+--                 Nothing ->
+--                     addPrice prices f
+
+--                 -- check if the price has changed
+--                 Just num ->
+--                     if num == f
+--                         then prices
+--                         else addPrice prices f
+
+
 safelyConcatList : List Float -> String -> List Float
-safelyConcatList list a = 
+safelyConcatList prices a = 
     case String.toFloat a of
         Err msg ->
-            list
+            prices
 
         Ok f ->
-           addPrice list f
+           addPrice prices f
 
 average : List Float -> Float
 average list = 

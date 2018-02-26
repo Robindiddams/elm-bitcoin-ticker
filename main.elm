@@ -1,5 +1,4 @@
 import Html exposing (..)
-import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import WebSocket
 import Helpers exposing (..)
@@ -18,7 +17,7 @@ main =
 -- MODEL
 
 type alias Model =
-  { input : String
+  { price : String
   , messages : List Float
   }
 
@@ -31,18 +30,14 @@ init =
 -- UPDATE
 
 type Msg
-  = Input String
-  | Start
+  = Start
   | Stop
   | NewMessage String
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
-update msg {input, messages} =
+update msg {price, messages} =
   case msg of
-    Input newInput ->
-      (Model newInput messages, Cmd.none)
-
     Start ->
       (Model "" messages, WebSocket.send "wss://ws-feed.gdax.com" "{\"type\": \"subscribe\", \"product_ids\": [\"BTC-USD\"], \"channels\": [ {\"name\": \"ticker\", \"product_ids\": [\"BTC-USD\"]}]}")
       
@@ -51,7 +46,6 @@ update msg {input, messages} =
 
     NewMessage str ->
       (Model ( parse str ) ( safelyConcatList messages (parse str) ) , Cmd.none)
-
 
 
 -- SUBSCRIPTIONS
@@ -66,7 +60,7 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
   div []
-    [ div [] [ text (String.append "Current Price: " model.input ) ]
+    [ div [] [ text (String.append "Current Price: "  model.price ) ]
     , div [] [ text (String.append "Moving Average: " ( toString ( average model.messages ) ) ) ]
     , button [onClick Start] [text "Start"]
     , button [onClick Stop] [text "Stop"]
