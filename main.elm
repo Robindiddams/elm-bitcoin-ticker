@@ -2,6 +2,7 @@ import Html exposing (..)
 import Html.Events exposing (..)
 import WebSocket
 import Helpers exposing (..)
+import Keyboard exposing (downs, KeyCode)
 
 import String
 
@@ -13,46 +14,42 @@ main =
     , subscriptions = subscriptions
     }
 
+host : String
+host = "ws://127.0.0.1:3000"
 
 -- MODEL
 
 type alias Model =
-  { price : String
-  , messages : List Float
-  }
+  { message : String}
 
 
 init : (Model, Cmd Msg)
 init =
-  (Model "" [], Cmd.none)
+  (Model "", Cmd.none)
 
 
 -- UPDATE
 
 type Msg
-  = Start
-  | Stop
-  | NewMessage String
+  = NewMessage String
+  | KeyPressed KeyCode
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
-update msg {price, messages} =
+update msg {message} =
   case msg of
-    Start ->
-      (Model "" messages, WebSocket.send "wss://ws-feed.gdax.com" "{\"type\": \"subscribe\", \"product_ids\": [\"BTC-USD\"], \"channels\": [ {\"name\": \"ticker\", \"product_ids\": [\"BTC-USD\"]}]}")
-      
-    Stop ->
-      (Model "" messages, WebSocket.send "wss://ws-feed.gdax.com" "{\"type\": \"unsubscribe\", \"product_ids\": [\"BTC-USD\"], \"channels\": [ {\"name\": \"ticker\", \"product_ids\": [\"BTC-USD\"]}]}")
+    KeyPressed key ->
+      (Model message, WebSocket.send host "{\"Author\":\"Robin\"\"Body\":\"Hello\"}" )
 
     NewMessage str ->
-      (Model ( parse str ) ( safelyConcatList messages (parse str) ) , Cmd.none)
+      (Model str, Cmd.none)
 
 
 -- SUBSCRIPTIONS
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  WebSocket.listen "wss://ws-feed.gdax.com" NewMessage
+  Sub.batch[ Keyboard.downs KeyPressed, WebSocket.listen "wss://ws-feed.gdax.com" NewMessage]
 
 
 -- VIEW
@@ -60,12 +57,10 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
   div []
-    [ div [] [ text (String.append "Current Price: "  model.price ) ]
-    , div [] [ text (String.append "Moving Average: " ( toString ( average model.messages ) ) ) ]
-    , button [onClick Start] [text "Start"]
-    , button [onClick Stop] [text "Stop"]
-    , div [] [ text "Recent Prices: " ]
-    , div [] (List.map viewMessage model.messages)
+    [ div [] [ text (String.append "Message: "  model.message ) ]
+    -- , div [] [ text (String.append "Moving Average: " ( toString ( average model.messages ) ) ) ]
+    -- , button [onClick Start] [text "Start"]
+    -- , button [onClick Stop] [text "Stop"]
     ]
 
 
