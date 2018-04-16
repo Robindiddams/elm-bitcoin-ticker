@@ -4,15 +4,19 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"strings"
+
+	"github.com/Robindiddams/elm-bitcoin-ticker/wordplay"
 
 	"golang.org/x/net/websocket"
 )
 
 type Client struct {
-	connection *websocket.Conn
-	ch         chan *Message
-	close      chan bool
-	Name       string
+	connection     *websocket.Conn
+	ch             chan *Message
+	close          chan bool
+	Name           string
+	guessedLetters []rune
 }
 
 func NewClient(ws *websocket.Conn) Client {
@@ -58,11 +62,28 @@ func (c *Client) listenToRead() {
 			err := websocket.JSON.Receive(c.connection, &msg)
 			fmt.Printf("Received: %+v\n", msg)
 			if err == io.EOF {
+				fmt.Println("disconnection")
 				c.close <- true
 			} else if err != nil {
 				// c.server.Err(err)
 			} else {
-				broadcast(&msg)
+				if !strings.ContainsRune(string(c.guessedLetters), rune(msg.Body[1])) {
+					c.guessedLetters = append(c.guessedLetters, rune(msg.Body[1]))
+
+				}
+				obfuscatedWord := wordplay.ObfuscateWord(c.guessedLetters, wordToGuess)
+
+				if !strings.Contains(obfuscatedWord, "?") {
+					//player won
+					clientWon(c.Name)
+					c.guessedLetters = make([]rune, 0)
+				} else {
+					m := Message{
+						Author: c.Name,
+						Body:   fmt.Sprintf("hint: %s", obfuscatedWord),
+					}
+					c.ch <- &m
+				}
 			}
 		}
 	}

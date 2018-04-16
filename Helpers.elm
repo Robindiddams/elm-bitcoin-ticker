@@ -8,7 +8,7 @@ parse : String-> String
 parse str = 
     case decodeString (field "price" string) str of
         Err msg ->
-            "------.--"
+            ""
         
         Ok value ->
             value

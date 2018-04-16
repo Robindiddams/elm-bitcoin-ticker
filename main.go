@@ -2,19 +2,20 @@ package main
 
 import (
 	"net/http"
+
+	"github.com/Robindiddams/elm-bitcoin-ticker/wordplay"
+
 	"golang.org/x/net/websocket"
 )
-
-
 
 type Message struct {
 	Author string
 	Body   string
 }
 
-//~/go $ go get -u golang.org/x/net/websocket
-
 func main() {
+	// set word
+	wordToGuess = wordplay.RandomWord()
 	http.HandleFunc("/ws", broadcastHandler)
 	http.ListenAndServe(":3000", nil)
 }
