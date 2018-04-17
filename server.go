@@ -34,7 +34,6 @@ func addClientAndGreet(list []Client, client Client) []Client {
 		Author: "Server",
 		Body:   "welcome",
 	}
-	// websocket.JSON.Send(client.connection, Message{"Server", "Welcome!"})
 	return clients
 }
 

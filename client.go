@@ -67,6 +67,7 @@ func (c *Client) listenToRead() {
 			} else if err != nil {
 				// c.server.Err(err)
 			} else {
+				// add letter to guessed letters if its right
 				if !strings.ContainsRune(string(c.guessedLetters), rune(msg.Body[1])) {
 					c.guessedLetters = append(c.guessedLetters, rune(msg.Body[1]))
 
