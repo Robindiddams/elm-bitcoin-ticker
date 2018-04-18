@@ -72,8 +72,10 @@ func (c *Client) listenToRead() {
 					c.guessedLetters = append(c.guessedLetters, rune(msg.Body[1]))
 
 				}
+				// add ? marks to covered letters
 				obfuscatedWord := wordplay.ObfuscateWord(c.guessedLetters, wordToGuess)
 
+				// check if they got it right
 				if !strings.Contains(obfuscatedWord, "?") {
 					//player won
 					clientWon(c.Name)

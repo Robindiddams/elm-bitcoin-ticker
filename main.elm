@@ -2,7 +2,6 @@ import Html exposing (..)
 import Html.Events exposing (..)
 import Char exposing (fromCode)
 import WebSocket
-import Helpers exposing (..)
 import Keyboard exposing (downs, KeyCode)
 import String
 import Result exposing (withDefault)
